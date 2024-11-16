@@ -1,0 +1,12 @@
+{% extends 'blog/base.html' %}
+
+{% block content %}
+    <h1>Character List</h1>
+    {% for character in characters %}
+        <article class="character">
+            <h2><a href="{% url 'character_detail' id_character=character.id_character %}">{{ character.id_character }}</a></h2>
+            <p>{{ character.etat }}</p>
+            <p>{{ character.lieu }}</p>
+        </article>
+    {% endfor %}
+{% endblock %}

@@ -1,10 +1,19 @@
 from django.urls import path
 from . import views
-
+ 
 urlpatterns = [
-    path('', views.post_list, name='post_list'),
-    path('personne/<str:pk>/', views.post_detail, name='post_detail'),
+    path('', views.character_list, name='character_list'),
+    path('character/<str:id_character>/', views.character_detail, name='character_detail'),
+    path('character/<str:id_character>/?<str:message>', views.character_detail, name='character_detail_mes'),
 ]
+
+# from django.urls import path
+# from . import views
+
+# urlpatterns = [
+#     path('', views.post_list, name='post_list'),
+#     path('personne/<str:pk>/', views.post_detail, name='post_detail'),
+# ]
 
 """
  Comme vous pouvez le voir, nous assignons une vue appelée post_list à l'URL racine. Ce modèle d'URL correspond à une chaîne vide et le résolveur d'URL de Django ignore le nom de domaine (par exemple, http://127.0.0.1:8000/), soit la première partie de l'URL. 
