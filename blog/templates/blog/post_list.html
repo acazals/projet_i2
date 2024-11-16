@@ -1,6 +1,18 @@
-<html>
-<body>
-    <p>Hi there!</p>
-    <p>It works!</p>
-</body>
-</html>
+{% extends 'blog/base.html' %}
+
+{% block content %}
+
+{% for personne in personnes %}
+    <article class="poisson">
+             <!--
+
+            
+             -->          
+        <h2><a href="">personne.id_character</a></h2>
+        <p>{{ personne.etat }}</p>
+        <p>{{ personne.lieu }}</p>
+    </article>
+{% endfor %}
+
+{% endblock %}
+           

@@ -1,0 +1,28 @@
+À chaque fois que vous apportez des modifications à votre projet, voici le processus :
+
+    Ajouter les fichiers modifiés :
+
+git add .
+
+    Valider les modifications avec un message :
+
+git commit -m "Description des changements apportés"
+
+    Envoyer les changements à GitHub :
+
+git push
+
+
+Revenir en arrière si un problème survient
+
+Si vous voulez revenir à un état précédent (par exemple, après avoir cassé quelque chose), vous pouvez utiliser Git pour cela.
+
+    Voir l'historique des commits :
+
+git log
+
+    Revenir à un commit spécifique :
+
+Copiez l'identifiant du commit (par exemple a1b2c3d) et utilisez cette commande :
+
+git checkout a1b2c3d
