@@ -8,7 +8,7 @@
 
             
              -->          
-        <h2><a href="">personne.id_character</a></h2>
+             <h2><a href="{% url 'post_detail' pk=personne.pk %}">{{ personne.id_character }}</a></h2>
         <p>{{ personne.etat }}</p>
         <p>{{ personne.lieu }}</p>
     </article>

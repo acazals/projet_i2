@@ -1,0 +1,11 @@
+{% block content %}
+    <div class="personne">
+        {% if personne.id_character %}
+            <div class="date">
+                <h2>{{ personne.id_character }}</h2>
+            </div>
+        {% endif %}
+        <p>{{ personne.etat }}</p>
+        <p>{{ personne.lieu }}</p>
+    </div>
+{% endblock %}
