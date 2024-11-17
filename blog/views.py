@@ -78,24 +78,103 @@ def character_detail(request, id_character):
 
             
             # mettre à jour temporairement le lieu dans l'objet character
+            mycharacter = get_object_or_404(Character, id_character = id_character)
             nouveau_lieu_id = form.cleaned_data.get('lieu')
             nouveau_lieu = get_object_or_404(Equipement, id_equip=nouveau_lieu_id)
-            ancien_lieu = character.lieu  # Conserver l'ancien lieu pour mise à jour
+            ancien_lieu = mycharacter.lieu  # Conserver l'ancien lieu pour mise à jour
 
-            character.lieu = nouveau_lieu  # mettre à jour le lieu sans sauvegarder encore
+            #character.lieu = nouveau_lieu  # mettre à jour le lieu sans sauvegarder encore
 
-            if character.lieu.disponibilite == "libre":
-                print("Le lieu est libre, mise à jour en cours...")
-                # Si le nouveau lieu est libre, effectuez les changements
-                if ancien_lieu:
-                    ancien_lieu.disponibilite = "libre"  # L'ancien lieu devient libre
-                    ancien_lieu.save()
+            if nouveau_lieu.disponibilite == "libre":
+                    
+                    # cas 1 : la grotte pour dormir donc etat doit etre fatigue
+                    if nouveau_lieu.id_equip == "grotte" : 
+                        if character.etat == "fatigue" :
+                         
+                            print(f"La grotte est libre et {id_character} est fatigue, mise à jour en cours...")
+                            
+                            
+                            ancien_lieu.disponibilite = "libre"  # L'ancien lieu devient libre
+                            ancien_lieu.save()
 
-                nouveau_lieu.disponibilite = "occupé"  # Le nouveau lieu devient occupé
-                nouveau_lieu.save()
+                            nouveau_lieu.disponibilite = "occupé"  # Le nouveau lieu devient occupé
+                            nouveau_lieu.save()
+                            character.lieu = nouveau_lieu
+                            character.etat = "enforme" # apres la grotte il s'est repose donc il est en forme
+                            character.save()  # Enregistrer les modifications du personnage
+                            return redirect('character_detail', id_character=id_character)
+                        else : 
+                            print (f"grotte libre mais {id_character} n'est pas fatigue")
+                            return render(request, 'blog/character_detail.html', {
+                                'character': character,
+                                'form': form,
+                                'error_message': "Le poisson n'est pas fatigue il ne veut pas aller dormir dans la grotte."
+                })
 
-                character.save()  # Enregistrer les modifications du personnage
-                return redirect('character_detail', id_character=id_character)
+
+                    # cas 2 : algue, pour se nourrir
+                    if nouveau_lieu.id_equip == "Algue" : 
+                        if character.etat == "faim" :
+                         
+                            print(f"L'algue est libre et {id_character} a faim, mise à jour en cours...")
+                            
+                            
+                            ancien_lieu.disponibilite = "libre"  # L'ancien lieu devient libre
+                            ancien_lieu.save()
+
+                            nouveau_lieu.disponibilite = "occupé"  # Le nouveau lieu devient occupé
+                            nouveau_lieu.save()
+                            character.lieu = nouveau_lieu
+                            character.etat = "enforme" # apres avoir mange il n'a plus faim, il est en forme
+                            character.save()  # Enregistrer les modifications du personnage
+                            return redirect('character_detail', id_character=id_character)
+                        else : 
+                            print (f"algue libre  mais {id_character} n'a pas faim") 
+                            return render(request, 'blog/character_detail.html', {
+                                'character': character,
+                                'form': form,
+                                'error_message': "Le poisson n'a pas faim."
+    })
+
+                    # cas 3 : rocher, le poisson s'amuse, il est fatigue apres ca 
+
+                    if nouveau_lieu.id_equip == "rocher" : 
+                        if character.etat != "fatigue" :
+                         
+                            print(f"Le rocher est libre et {id_character} n'est pas fatigue, mise à jour en cours...")
+                            
+                           
+                            ancien_lieu.disponibilite = "libre"  # L'ancien lieu devient libre
+                            ancien_lieu.save()
+
+                            nouveau_lieu.disponibilite = "occupé"  # Le nouveau lieu devient occupé
+                            nouveau_lieu.save()
+                            character.lieu = nouveau_lieu
+                            character.etat = "fatigue" # apres avoir mange il n'a plus faim, il est en forme
+                            character.save()  # Enregistrer les modifications du personnage
+                            return redirect('character_detail', id_character=id_character)
+                        else : 
+                            print (f"rocher libre mais {id_character} est fatigue") 
+                            return render(request, 'blog/character_detail.html', {
+                                'character': character,
+                                'form': form,
+                                'error_message': "Le poisson est déjà fatigue il ne peut pas aller nager dans les rochers."
+    })
+
+                    if nouveau_lieu.id_equip == "surface" : 
+                        # pas de conditions d'etat pour la surface                 
+                         
+                        
+                        ancien_lieu.disponibilite = "libre"  # L'ancien lieu devient libre
+                        ancien_lieu.save()
+                       #surface toujours libre, pas de modifications                       
+                        character.etat = "faim" # apres etre monte a la surface ou il n'y a rien a manger il a faim
+                        character.save()  # Enregistrer les modifications du personnage
+                        return redirect('character_detail', id_character=id_character)
+                        
+
+
+
             else : 
                 print("Le lieu est occupé, aucun changement effectué.")
                 return render(request, 'blog/character_detail.html', {
