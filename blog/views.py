@@ -75,24 +75,45 @@ def character_detail(request, id_character):
         form = MoveForm(request.POST, instance=character)
         
         if form.is_valid():  # Vérifier si le formulaire est valide
-            # 1. Mettre à jour l'ancien lieu
-            ancien_lieu = get_object_or_404(Equipement, id_equip=character.lieu.id_equip)
-            ancien_lieu.disponibilite = "libre"
-            ancien_lieu.save()
+
             
-            # 2. Sauvegarder le personnage avec les nouvelles données
-            form.save()
+            # mettre à jour temporairement le lieu dans l'objet character
+            nouveau_lieu_id = form.cleaned_data.get('lieu')
+            nouveau_lieu = get_object_or_404(Equipement, id_equip=nouveau_lieu_id)
+            ancien_lieu = character.lieu  # Conserver l'ancien lieu pour mise à jour
+
+            character.lieu = nouveau_lieu  # mettre à jour le lieu sans sauvegarder encore
+
+            if character.lieu.disponibilite == "libre":
+                print("Le lieu est libre, mise à jour en cours...")
+                # Si le nouveau lieu est libre, effectuez les changements
+                if ancien_lieu:
+                    ancien_lieu.disponibilite = "libre"  # L'ancien lieu devient libre
+                    ancien_lieu.save()
+
+                nouveau_lieu.disponibilite = "occupé"  # Le nouveau lieu devient occupé
+                nouveau_lieu.save()
+
+                character.save()  # Enregistrer les modifications du personnage
+                return redirect('character_detail', id_character=id_character)
+            else : 
+                print("Le lieu est occupé, aucun changement effectué.")
+                return render(request, 'blog/character_detail.html', {
+                    'character': character,
+                    'form': form,
+                    'error_message': "Le lieu sélectionné est déjà occupé."
+    })
+        else:
             
-            # 3. Mettre à jour le nouveau lieu
-            nouveau_lieu = get_object_or_404(Equipement, id_equip=character.lieu.id_equip)
-            nouveau_lieu.disponibilite = "occupé"
-            nouveau_lieu.save()
-            
-            # 4. Rediriger vers la page mise à jour
-            return redirect('character_detail', id_character=id_character)
+            # Si le lieu est occupé, afficher un message d'erreur
+            return render(request, 'blog/character_detail.html', {
+                'character': character,
+                'form': form,
+                'error_message': "Le lieu sélectionné est déjà occupé."
+            })
     
     else:  # Cas où la requête est GET
-        # Créer un formulaire vide pour l'affichage
+        # creer un formulaire vide pour l'affichage
         form = MoveForm()
 
     # Étape 3 : Rendre le template avec les données appropriées

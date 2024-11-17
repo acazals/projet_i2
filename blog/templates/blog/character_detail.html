@@ -10,6 +10,13 @@
         <button type="submit" class="btn btn-outline-light">OK</button>
         <a href="{% url 'character_list' %}">Back</a>
     </form>
+
+    {% if error_message %}
+    <div class="alert alert-danger" style="font-weight: bold; color: red;">
+        {{ error_message }}
+    </div>
+    {% endif %}
+
 </div>
  
  
