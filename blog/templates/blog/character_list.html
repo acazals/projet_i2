@@ -7,6 +7,12 @@
             <h2><a href="{% url 'character_detail' id_character=character.id_character %}">{{ character.id_character }}</a></h2>
             <p>{{ character.etat }}</p>
             <p>{{ character.lieu }}</p>
+
+            {% if character.image %}
+                <img src="{{ character.image.url }}" alt="{{ character.id_character }}" />
+            {% else %}
+                <p>No image available</p>
+            {% endif %}
         </article>
     {% endfor %}
 {% endblock %}
